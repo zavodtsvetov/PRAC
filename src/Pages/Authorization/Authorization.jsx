@@ -1,11 +1,15 @@
 import styled from "styled-components";
+import { ROLE } from "../../constants";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { server } from "../../bff";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { H2, Input, Button } from "../../components";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
+import { setUser } from "../../actions";
+import { userRoleIdSelector } from "../../selectors";
+import { useDispatch, useStore, useSelector } from "react-redux";
 const authForm = yup.object().shape({
   login: yup
     .string()
@@ -32,10 +36,10 @@ const RegisterLink = styled(Link)`
 
 const AuthorizationContainer = ({ className }) => {
   const [serverError, setServerError] = useState(null);
-  const [loginValue, setLoginValue] = useState("");
-  const [passValue, setPassValue] = useState("");
+
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -45,27 +49,44 @@ const AuthorizationContainer = ({ className }) => {
     },
     resolver: yupResolver(authForm),
   });
+const dispatch = useDispatch()
+const store = useStore()
+ const roleId = useSelector(userRoleIdSelector)
+useEffect(()=> {
+  let currentWasLogout = store.getState().app.wasLogout
+   return store.subscribe(()=> {
+let prevWasLogogut = currentWasLogout
+currentWasLogout = store.getState().app.wasLogout
+if(currentWasLogout !==prevWasLogogut){
+  reset()
+}
+  }, [reset, store])
+  
+}, 
 
-  const sendFormData = ({ login, password }) => {
-    server.authorize(login, password).then(({ error, res }) => {
+)
+//кнопка авторизоваться
+  const onSubmit = ({ login, password }) => {
+
+    server.authorize(login, password).then(({ error, response }) => {
       if (error) {
         setServerError(`Ошибка запроса: ${error}`);
       }
+        dispatch(setUser(response))
+
     });
   };
   const formError = errors?.login?.message || errors?.password?.message;
   const errorMessage = formError || serverError;
-  const onInputChange = ({ target }) => {
-    setLoginValue(target.value);
-  };
-  const onPasswordChange = ({ target }) => {
-    setPassValue(target.value);
-  };
+
+ if (roleId !== ROLE.GUEST) {
+  return <Navigate to='/' />
+ }
   return (
     <>
       <div className={className}>
         <H2>Авторизация</H2>
-        <form onSubmit={handleSubmit(sendFormData)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Input
             type="text"
             placeholder="Логин"

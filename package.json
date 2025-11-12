@@ -7,10 +7,22 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "eslintConfig" : {
+    "extends" : [
+      "prettier"
+    ], 
+    "plugins" : [
+      "prettier"
+    ]
+  }
   },
+  
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
     "prop-types": "^15.8.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

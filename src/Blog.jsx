@@ -6,7 +6,6 @@ const Content = styled.div`
   padding: 120px 0;
   height: 600px;
 `;
-
 const AppColumn = styled.div`
   display: flex;
   flex-direction: column;

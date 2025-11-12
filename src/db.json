@@ -1,11 +1,17 @@
 {
 	"users" : [
 		{
-			"id" : "001",
-		"login " : "ffff",
-		"password " : "ffff",
+		"id" : "001",
+		"login" : "meatfough",
+		"password" : "pass",
 		"registed_at":  "31/10/25",
-		"role_id": 0}
+		"roleId": 0},
+		{
+		"id" : "002",
+		"login" : "aaaa",
+		"password" : "aaaa",
+		"registed_at":  "31/11/25",
+		"roleId": 0}
 	],
 	"roles" : [
 		{"id" : 0,
