@@ -4,22 +4,22 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { server } from "../../bff";
-import {useState } from "react";
+import { useEffect, useState } from "react";
 import { H2, Input, Button } from "../../components";
-import { Link, Navigate } from "react-router";
+import {Navigate } from "react-router";
 import { setUser } from "../../actions";
 import { userRoleIdSelector } from "../../selectors";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useResetForm } from "../../hooks";
-//копируем
-const authForm = yup.object().shape({
+
+const regForm = yup.object().shape({
   login: yup
     .string()
     .required("Введите логин!")
     .matches(/^\w+$/, "Неверный логин! Только буквы.")
     .min(3, "Логин не менее трёх символов!")
     .max(10, "Логин не более 10 символов!"),
-    //копируем
+  
   password: yup
     .string()
     .required("Введите пароль!")
@@ -29,18 +29,17 @@ const authForm = yup.object().shape({
     )
     .min(3, "Пароль не менее трёх символов!")
     .max(10, "Пароль не более 10 символов!"),
+  passCheck: yup
+   .string()
+   .required("Введите пароль повторно!")
+   .oneOf([yup.ref('password'), null], 'Пароли не совпадают')
 });
-const RegisterLink = styled(Link)`
-  text-align: center;
-  text-decoration: underline;
-  margin: 5px 0;
-  font-size: 13px;
-`;
 
-const AuthorizationContainer = ({ className }) => {
-  const [serverError, setServerError] = useState(null);
-//копируем
-  const {
+const RegistrationContainer = ({ className }) => {
+const [serverError, setServerError] = useState(null);
+const dispatch = useDispatch()
+const roleId = useSelector(userRoleIdSelector)
+const {
     register,
     reset,
     handleSubmit,
@@ -49,20 +48,16 @@ const AuthorizationContainer = ({ className }) => {
     defaultValues: {
       login: "",
       password: "",
+      passCheck: ''
     },
-    resolver: yupResolver(authForm),
+    resolver: yupResolver(regForm),
   });
-const dispatch = useDispatch()
 
- const roleId = useSelector(userRoleIdSelector)
- //копируем
-useResetForm(reset) 
+useResetForm(reset)
 
-
-//кнопка авторизоваться
 //копируем
   const onSubmit = ({ login, password }) => {
-    server.authorize(login, password).then(({ error, response }) => {
+    server.register(login, password).then(({ error, response }) => {
       if (error) {
         setServerError(`Ошибка запроса: ${error}`);
       }
@@ -71,7 +66,7 @@ useResetForm(reset)
     });
   };
   //копируем
-  const formError = errors?.login?.message || errors?.password?.message;
+  const formError = errors?.login?.message || errors?.password?.message || errors?.passCheck?.message
   const errorMessage = formError || serverError;
 
  if (roleId !== ROLE.GUEST) {
@@ -80,7 +75,7 @@ useResetForm(reset)
   return (
     <>
       <div className={className}>
-        <H2>Авторизация</H2>
+        <H2>Регистрация</H2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Input
             type="text"
@@ -90,17 +85,23 @@ useResetForm(reset)
             })}
           />
           <Input
-            name="authPassword"
             type="password"
             placeholder="Пароль"
             {...register("password", {
               onChange: () => setServerError(null),
             })}
           />{" "}
-          <Button type="submit" disabled={!!formError}>
-            Авторизоваться
+          <Input
+            type="password"
+            placeholder="Повторите пароль"
+            {...register("passCheck", {
+              onChange: () => setServerError(null),
+            })}
+          />
+          <Button type="submit" fontSize='25px' disabled={!!formError}>
+            Зарегистрироваться
           </Button>
-          <RegisterLink to="/register">Регистрация</RegisterLink>
+          
         </form>
         {errorMessage && <p>{errorMessage}</p>}
       </div>
@@ -108,7 +109,7 @@ useResetForm(reset)
   );
 };
 
-export const Authorization = styled(AuthorizationContainer)`
+export const Registration = styled(RegistrationContainer)`
   display: flex;
   flex-direction: column;
   align-items: center;

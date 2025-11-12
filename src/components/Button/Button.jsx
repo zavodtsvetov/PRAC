@@ -11,7 +11,7 @@ export const Button = styled(ButtonContainer)`
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 30px;
+	font-size: ${({ fontSize = '30px' }) => fontSize};
 	width: ${({ width = 'auto' }) => width};
 	height: 32px;
 	color: ${({ color = 'white' }) => color};
