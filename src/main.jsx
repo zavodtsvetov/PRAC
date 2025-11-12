@@ -6,10 +6,9 @@ import Blog from "./Blog";
 import { store } from "./store";
 
 createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <BrowserRouter>
-    <Blog />
-  </BrowserRouter>
-  </Provider>
-   )
-  
+	<Provider store={store}>
+		<BrowserRouter>
+			<Blog />
+		</BrowserRouter>
+	</Provider>,
+);

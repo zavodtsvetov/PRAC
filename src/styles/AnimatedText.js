@@ -11,4 +11,4 @@ background: linear-gradient(90deg, #e933ff, #ffb400, #ff3333, #334dff, #e933ff);
   from {background-position: 0% center}         
   to {background-position: 200% center}
 }
-`
+`;

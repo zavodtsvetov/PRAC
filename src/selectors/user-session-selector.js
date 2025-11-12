@@ -1,1 +1,1 @@
-export const userSessionSelector = ({user}) => user.session
+export const userSessionSelector = ({ user }) => user.session;

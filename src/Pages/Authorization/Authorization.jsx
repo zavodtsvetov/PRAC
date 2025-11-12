@@ -4,118 +4,116 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { server } from "../../bff";
-import {useState } from "react";
+import { useState } from "react";
 import { H2, Input, Button } from "../../components";
 import { Link, Navigate } from "react-router";
 import { setUser } from "../../actions";
 import { userRoleIdSelector } from "../../selectors";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useResetForm } from "../../hooks";
 //копируем
 const authForm = yup.object().shape({
-  login: yup
-    .string()
-    .required("Введите логин!")
-    .matches(/^\w+$/, "Неверный логин! Только буквы.")
-    .min(3, "Логин не менее трёх символов!")
-    .max(10, "Логин не более 10 символов!"),
-    //копируем
-  password: yup
-    .string()
-    .required("Введите пароль!")
-    .matches(
-      /^[\w]+$/,
-      "Недопустимый символ в пароле! Только буквы, цифры и # %"
-    )
-    .min(3, "Пароль не менее трёх символов!")
-    .max(10, "Пароль не более 10 символов!"),
+	login: yup
+		.string()
+		.required("Введите логин!")
+		.matches(/^\w+$/, "Неверный логин! Только буквы.")
+		.min(3, "Логин не менее трёх символов!")
+		.max(10, "Логин не более 10 символов!"),
+	//копируем
+	password: yup
+		.string()
+		.required("Введите пароль!")
+		.matches(
+			/^[\w]+$/,
+			"Недопустимый символ в пароле! Только буквы, цифры и # %",
+		)
+		.min(3, "Пароль не менее трёх символов!")
+		.max(10, "Пароль не более 10 символов!"),
 });
 const RegisterLink = styled(Link)`
-  text-align: center;
-  text-decoration: underline;
-  margin: 5px 0;
-  font-size: 13px;
+	text-align: center;
+	text-decoration: underline;
+	margin: 5px 0;
+	font-size: 13px;
 `;
 
 const AuthorizationContainer = ({ className }) => {
-  const [serverError, setServerError] = useState(null);
-//копируем
-  const {
-    register,
-    reset,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      login: "",
-      password: "",
-    },
-    resolver: yupResolver(authForm),
-  });
-const dispatch = useDispatch()
+	const [serverError, setServerError] = useState(null);
+	//копируем
+	const {
+		register,
+		reset,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		defaultValues: {
+			login: "",
+			password: "",
+		},
+		resolver: yupResolver(authForm),
+	});
+	const dispatch = useDispatch();
 
- const roleId = useSelector(userRoleIdSelector)
- //копируем
-useResetForm(reset) 
+	const roleId = useSelector(userRoleIdSelector);
+	//копируем
+	useResetForm(reset);
 
+	//кнопка авторизоваться
+	//копируем
+	const onSubmit = ({ login, password }) => {
+		server.authorize(login, password).then(({ error, response }) => {
+			if (error) {
+				setServerError(`Ошибка запроса: ${error}`);
+			}
+			dispatch(setUser(response));
+		});
+	};
+	//копируем
+	const formError = errors?.login?.message || errors?.password?.message;
+	const errorMessage = formError || serverError;
 
-//кнопка авторизоваться
-//копируем
-  const onSubmit = ({ login, password }) => {
-    server.authorize(login, password).then(({ error, response }) => {
-      if (error) {
-        setServerError(`Ошибка запроса: ${error}`);
-      }
-        dispatch(setUser(response))
-
-    });
-  };
-  //копируем
-  const formError = errors?.login?.message || errors?.password?.message;
-  const errorMessage = formError || serverError;
-
- if (roleId !== ROLE.GUEST) {
-  return <Navigate to='/' />
- }
-  return (
-    <>
-      <div className={className}>
-        <H2>Авторизация</H2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            type="text"
-            placeholder="Логин"
-            {...register("login", {
-              onChange: () => setServerError(null),
-            })}
-          />
-          <Input
-            name="authPassword"
-            type="password"
-            placeholder="Пароль"
-            {...register("password", {
-              onChange: () => setServerError(null),
-            })}
-          />{" "}
-          <Button type="submit" disabled={!!formError}>
-            Авторизоваться
-          </Button>
-          <RegisterLink to="/register">Регистрация</RegisterLink>
-        </form>
-        {errorMessage && <p>{errorMessage}</p>}
-      </div>
-    </>
-  );
+	if (roleId !== ROLE.GUEST) {
+		return <Navigate to="/" />;
+	}
+	return (
+		<>
+			<div className={className}>
+				<H2>Авторизация</H2>
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<Input
+						type="text"
+						placeholder="Логин"
+						{...register("login", {
+							onChange: () => setServerError(null),
+						})}
+					/>
+					<Input
+						name="authPassword"
+						type="password"
+						placeholder="Пароль"
+						{...register("password", {
+							onChange: () => setServerError(null),
+						})}
+					/>{" "}
+					<Button type="submit" disabled={!!formError}>
+						Авторизоваться
+					</Button>
+					<RegisterLink to="/register">Регистрация</RegisterLink>
+				</form>
+				{errorMessage && <p>{errorMessage}</p>}
+			</div>
+		</>
+	);
 };
 
 export const Authorization = styled(AuthorizationContainer)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 
-  & > form {
-    display: flex;
-    flex-direction: column;
-    width: 260px;
-  }
+	& > form {
+		display: flex;
+		flex-direction: column;
+		width: 260px;
+	}
 `;
