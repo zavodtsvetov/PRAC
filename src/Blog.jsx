@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { Routes, Route } from "react-router";
 import { Header, Footer } from "./components";
-import { Authorization, Registration } from "./Pages";
-const Content = styled.div`
+import { Authorization, Registration, Users } from "./Pages";
+const Page = styled.div`
 	padding: 120px 0;
 	height: 600px;
 `;
@@ -20,27 +20,25 @@ function Blog() {
 		<>
 			<AppColumn>
 				<Header />
-				<Content>
+				<Page>
 					<Routes>
 						<Route path="/" element={<div>Главная страница</div>} />
 						<Route path="/login" element={<Authorization />} />
 						<Route path="/register" element={<Registration />} />
+						<Route path="/users" element={<Users />} />
+
+						<Route path="/post" element={<div>Новая статья</div>} />
 						<Route
-							path="/users"
-							element={<div>Пользователи</div>}
-						/>
-						<Route
-							path="/post/:post_id"
+							path="/post/:postId"
 							element={<div>Статья</div>}
 						/>
-						<Route path="/post" element={<div>Новая статья</div>} />
 						<Route
 							path="*"
 							element={<div>Ошибка. Страница не существует</div>}
 						/>
 						<Route path="*" element={<div>Нет доступа!</div>} />
 					</Routes>
-				</Content>
+				</Page>
 				<Footer />
 			</AppColumn>
 		</>

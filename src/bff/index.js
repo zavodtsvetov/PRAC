@@ -1,2 +1,1 @@
-export * from "./get-users";
-export * from "./server";
+export { server } from "./server";

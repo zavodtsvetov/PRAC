@@ -1,9 +1,9 @@
+import { server } from "../../bff";
 import styled from "styled-components";
 import { ROLE } from "../../constants";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { server } from "../../bff";
 import { useState } from "react";
 import { H2, Input, Button } from "../../components";
 import { Link, Navigate } from "react-router";
@@ -11,7 +11,7 @@ import { setUser } from "../../actions";
 import { userRoleIdSelector } from "../../selectors";
 import { useDispatch, useSelector } from "react-redux";
 import { useResetForm } from "../../hooks";
-//копируем
+
 const authForm = yup.object().shape({
 	login: yup
 		.string()
@@ -19,7 +19,7 @@ const authForm = yup.object().shape({
 		.matches(/^\w+$/, "Неверный логин! Только буквы.")
 		.min(3, "Логин не менее трёх символов!")
 		.max(10, "Логин не более 10 символов!"),
-	//копируем
+
 	password: yup
 		.string()
 		.required("Введите пароль!")
@@ -39,7 +39,7 @@ const RegisterLink = styled(Link)`
 
 const AuthorizationContainer = ({ className }) => {
 	const [serverError, setServerError] = useState(null);
-	//копируем
+
 	const {
 		register,
 		reset,
@@ -55,11 +55,9 @@ const AuthorizationContainer = ({ className }) => {
 	const dispatch = useDispatch();
 
 	const roleId = useSelector(userRoleIdSelector);
-	//копируем
+
 	useResetForm(reset);
 
-	//кнопка авторизоваться
-	//копируем
 	const onSubmit = ({ login, password }) => {
 		server.authorize(login, password).then(({ error, response }) => {
 			if (error) {
@@ -68,7 +66,7 @@ const AuthorizationContainer = ({ className }) => {
 			dispatch(setUser(response));
 		});
 	};
-	//копируем
+
 	const formError = errors?.login?.message || errors?.password?.message;
 	const errorMessage = formError || serverError;
 
@@ -83,6 +81,7 @@ const AuthorizationContainer = ({ className }) => {
 					<Input
 						type="text"
 						placeholder="Логин"
+						autoComplete="login"
 						{...register("login", {
 							onChange: () => setServerError(null),
 						})}
@@ -91,6 +90,7 @@ const AuthorizationContainer = ({ className }) => {
 						name="authPassword"
 						type="password"
 						placeholder="Пароль"
+						autoComplete="current-password"
 						{...register("password", {
 							onChange: () => setServerError(null),
 						})}
